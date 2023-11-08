@@ -8,11 +8,11 @@ node {
        app = docker.build("ballesterosd/tp7")
     }
 
-    stage('Test image') {
-        app.inside {
-            sh 'echo "Tests passed"'
-        }
-    }
+    // stage('Test image') {
+    //     app.inside {
+    //         sh 'echo "Tests passed"'
+    //     }
+    // }
 
     stage('Push image') {
         docker.withRegistry('https://registry.hub.docker.com', 'git') {
