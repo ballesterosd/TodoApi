@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_IMAGE_NAME = "ballesterosd/tp7" 
         DOCKER_IMAGE_TAG = "${env.BUILD_NUMBER}"
-        app
     }
     stage('Clone repository') {
         steps {
