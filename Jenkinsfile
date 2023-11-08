@@ -1,23 +1,42 @@
-node {
-    def app
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE_NAME = "ballesterosd/tp7" 
+        DOCKER_IMAGE_TAG = "${env.BUILD_NUMBER}"
+        app
+    }
     stage('Clone repository') {
-        checkout scm
+        steps {
+            checkout scm
+        }
     }
 
     stage('Build image') {
-       app = docker.build("ballesterosd/tp7")
+        steps {   
+            script {      
+                docker build -t "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"           
+            }
+        }
     }
 
-    // stage('Test image') {
-    //     app.inside {
-    //         sh 'echo "Tests passed"'
-    //     }
-    // }
+    stage('Test') {
+        steps {
+            script {
+                docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").withRun('-p 8080:5273') {
+                    sh "docker exec ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} curl -X 'GET' 'http://localhost:5273/api/TodoItems'"
+                }
+            }
+        }
+    }
 
     stage('Push image') {
-        docker.withRegistry('https://index.docker.io/v1/', 'hub.docker') {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
+        steps {
+            script {        
+                docker.withRegistry('https://index.docker.io/v1/', 'hub.docker') {
+                    docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
+                }
+            }
         }
     }
 }
