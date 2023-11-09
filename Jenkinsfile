@@ -55,7 +55,7 @@ pipeline {
                         echo "Ejecutando el contenedor Docker... ${existingContainerId}"  
 
                         final String url = "http://localhost:5273/api/TodoItems"
-                        final String response = sh(script: "curl -s $url", returnStdout: true).trim()
+                        final String response = sh(script: "curl -s $url", returnStdout: true)
                         echo response
                     }
                     echo "Contenedor Docker ejecutado con éxito."
