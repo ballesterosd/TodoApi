@@ -43,8 +43,8 @@ pipeline {
         stage('Run Container and Test') {
             steps {
                 script {
-                    echo "Ejecutando el contenedor Docker..."
-                    def existingContainerId = sh(script: "docker ps -aqf name=${DOCKER_IMAGE_NAME}", returnStatus: true).trim()
+                    def existingContainerId = sh(script: "docker ps -aqf name=${DOCKER_IMAGE_NAME}", returnStatus: true)
+                    echo "Ejecutando el contenedor Docker... ${existingContainerId}"
                     docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").withRun("-p 5273:5273") {
                         sh "docker exec ${existingContainerId} curl -X GET http://localhost:5273/api/TodoItems"
                     }
