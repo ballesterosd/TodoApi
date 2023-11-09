@@ -52,8 +52,11 @@ pipeline {
                         def existingContainerId = sh(script: "docker ps -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStdout: true).trim()
                         sh "echo ${appsettingsData} > appsettings.json"
                         sh "docker cp appsettings.json ${existingContainerId}:/app/appsettings.json"
-                        echo "Ejecutando el contenedor Docker... ${existingContainerId}"                        
-                        sh "curl -X GET http://localhost:5273/api/TodoItems"
+                        echo "Ejecutando el contenedor Docker... ${existingContainerId}"  
+
+                        final String url = "http://localhost:5273/api/TodoItems"
+                        final String response = sh(script: "curl -s $url", returnStdout: true).trim()
+                        echo response
                     }
                     echo "Contenedor Docker ejecutado con éxito."
                 }
