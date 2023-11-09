@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE_NAME = "ballesterosd/tp7" 
         DOCKER_IMAGE_TAG = "${env.BUILD_NUMBER}"
-        appsettingsData = "{\"Status\": \"Enabled\"}"
+        appsettingsData = "{'Status': 'Enabled'}"
     }
 
     stages{
@@ -55,7 +55,7 @@ pipeline {
                         echo "Ejecutando el contenedor Docker... ${existingContainerId}"  
 
                         final String url = "http://localhost:5273/api/TodoItems"
-                        final String response = sh(script: "curl -s $url", returnStdout: true)
+                        final String response = sh(script: "curl -X GET $url", returnStdout: true)
                         echo response
                     }
                     echo "Contenedor Docker ejecutado con éxito."
