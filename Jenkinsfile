@@ -15,9 +15,8 @@ pipeline {
 
         stage('Stop and Remove Existing Container') {
             steps {
-                def existingContainerId
                 script {
-
+                    def existingContainerId
                     existingContainerId = sh(script: "docker ps -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStatus: true)
 
                     if (existingContainerId) {
@@ -45,8 +44,8 @@ pipeline {
 
         stage('Run Container and Test') {
             steps {
-                def existingContainerId
                 script {
+                    def existingContainerId                    
                     docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").withRun("-p 5273:5273") {
                         existingContainerId = sh(script: "docker ps -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStatus: true)
                         echo "Ejecutando el contenedor Docker... ${existingContainerId}"                        
