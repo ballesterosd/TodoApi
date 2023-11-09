@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE_NAME = "ballesterosd/tp7" 
         DOCKER_IMAGE_TAG = "${env.BUILD_NUMBER}"
+        appsettingsData = "\{\"Status\": \"Enabled\"\}"
     }
 
     stages{
@@ -49,8 +50,10 @@ pipeline {
                 script {
                     docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").withRun("-p 5273:5273") {
                         def existingContainerId = sh(script: "docker ps -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStdout: true).trim()
+                        echo $appsettingsData > appsettings.tmp
+                        sh "docker cp appsettings.json ${existingContainerId}:/app/appsettings.json"
                         echo "Ejecutando el contenedor Docker... ${existingContainerId}"                        
-                        sh "docker exec ${existingContainerId} curl -X GET http://localhost:5273/api/TodoItems"
+                        sh "curl -X GET http://localhost:5273/api/TodoItems"
                     }
                     echo "Contenedor Docker ejecutado con éxito."
                 }
