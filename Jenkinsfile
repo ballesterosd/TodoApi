@@ -16,7 +16,7 @@ pipeline {
         stage('Stop and Remove Existing Container') {
             steps {
                 script {
-                    def existingContainerId = sh(script: "docker ps -aqf name='${DOCKER_IMAGE_NAME}'", returnStatus: true)
+                    def existingContainerId = sh(script: "docker ps -aqf --filter ancestor='${DOCKER_IMAGE_NAME}'", returnStatus: true)
                     if (existingContainerId) {
                         echo "Deteniendo y eliminando el contenedor existente con ID ${existingContainerId}..."
                         sh "docker stop ${existingContainerId}"
@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").withRun("-p 5273:5273") {
-                        def existingContainerId = sh(script: "docker ps -aqf name=${DOCKER_IMAGE_NAME}", returnStatus: true)
+                        def existingContainerId = sh(script: "docker ps -aqf --filter ancestor=${DOCKER_IMAGE_NAME}", returnStatus: true)
                         echo "Ejecutando el contenedor Docker... ${existingContainerId}"                        
                         sh "docker exec ${existingContainerId} curl -X GET http://localhost:5273/api/TodoItems"
                     }
