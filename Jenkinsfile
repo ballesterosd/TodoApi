@@ -16,9 +16,9 @@ pipeline {
         stage('Stop and Remove Existing Container') {
             steps {
                 script {
-                    def existingContainerIds = sh(script: "docker ps -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStatus: true, returnStdout: true).split("\n")
-
-                    if (!existingContainerIds.isEmpty()) {
+                    String existingContainerOutput = sh(script: "docker ps -a -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStdout: true)
+                    if (existingContainerOutput != null) {
+                        def existingContainerIds = existingContainerOutput.split("\n")
                         for (existingContainerId in existingContainerIds) {
                             echo "Deteniendo y eliminando el contenedor existente con ID ${existingContainerId}..."
                             sh "docker stop $existingContainerId"
