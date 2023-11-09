@@ -16,7 +16,7 @@ pipeline {
         stage('Stop and Remove Existing Container') {
             steps {
                 script {
-                    def existingContainerId = sh(script: "docker ps -aqf name=${DOCKER_IMAGE_NAME}", returnStatus: true).trim()
+                    def existingContainerId = sh(script: "docker ps -aqf name='${DOCKER_IMAGE_NAME}'", returnStatus: true)
                     if (existingContainerId) {
                         echo "Deteniendo y eliminando el contenedor existente con ID ${existingContainerId}..."
                         sh "docker stop ${existingContainerId}"
