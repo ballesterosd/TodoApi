@@ -49,7 +49,7 @@ pipeline {
             steps {
                 script {
                     docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").withRun("-p 5273:5273") {
-                        def existingContainerId = sh(script: "docker ps -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStdout: true).trim()
+                        def existingContainerId = sh(script: "docker ps -q --filter status=running", returnStdout: true).trim()
                         sh "echo ${appsettingsData} > appsettings.json"
                         sh "docker cp appsettings.json ${existingContainerId}:/app/appsettings.json"
                         echo "Ejecutando el contenedor Docker... ${existingContainerId}"  
