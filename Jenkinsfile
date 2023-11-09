@@ -48,13 +48,13 @@ pipeline {
         stage('Run Container and Test') {
             steps {
                 script {
-                    docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").withRun("-p 5273:5273") {
+                    docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").withRun("-p 80:5273") {
                         def existingContainerId = sh(script: "docker ps -q --filter status=running", returnStdout: true).trim()
                         sh "echo ${appsettingsData} > appsettings.json"
                         sh "docker cp appsettings.json ${existingContainerId}:/app/appsettings.json"
                         echo "Ejecutando el contenedor Docker... ${existingContainerId}"  
 
-                        final String url = "http://localhost:5273/api/TodoItems"
+                        final String url = "http://localhost/api/weatherforecast"
                         final String response = sh(script: "curl -X GET $url", returnStdout: true)
                         echo response
                     }
