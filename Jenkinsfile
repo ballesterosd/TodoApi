@@ -54,7 +54,7 @@ pipeline {
                         sh "docker cp appsettings.json ${existingContainerId}:/app/appsettings.json"
                         echo "Ejecutando el contenedor Docker... ${existingContainerId}"  
 
-                        final String url = "http://localhost/api/weatherforecast"
+                        final String url = "http://host.docker.internal/api/weatherforecast"
                         final String response = sh(script: "curl -X GET $url", returnStdout: true)
                         echo response
                     }
