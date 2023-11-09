@@ -16,16 +16,15 @@ pipeline {
         stage('Stop and Remove Existing Container') {
             steps {
                 script {
-                    def existingContainerId
-                    existingContainerId = sh(script: "docker ps -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStatus: true)
+                    def existingContainerIds = sh(script: "docker ps -a -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStdout: true).split("\n")
 
-                    if (existingContainerId) {
-                        echo "Deteniendo y eliminando el contenedor existente con ID ${existingContainerId}..."
-                        sh "docker stop ${existingContainerId}"
-                        sh "docker rm ${existingContainerId}"
-                        echo "Contenedor existente detenido y eliminado con éxito."
-                    } else {
-                        echo "No se encontró ningún contenedor existente con el nombre ${DOCKER_IMAGE_NAME}."
+                    if (!existingContainerIds.isEmpty()) {
+                        for (existingContainerId in existingContainerIds) {
+                            echo "Deteniendo y eliminando el contenedor existente con ID ${existingContainerId}..."
+                            sh "docker stop $existingContainerId"
+                            sh "docker rm $existingContainerId"
+                            echo "Contenedor existente detenido y eliminado con éxito."
+                        }
                     }
                 }
             }
@@ -45,9 +44,8 @@ pipeline {
         stage('Run Container and Test') {
             steps {
                 script {
-                    def existingContainerId                    
                     docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").withRun("-p 5273:5273") {
-                        existingContainerId = sh(script: "docker ps -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStatus: true)
+                        def existingContainerId = sh(script: "docker ps -a -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStdout: true)
                         echo "Ejecutando el contenedor Docker... ${existingContainerId}"                        
                         sh "docker exec ${existingContainerId} curl -X GET http://localhost:5273/api/TodoItems"
                     }
