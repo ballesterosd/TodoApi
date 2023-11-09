@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_IMAGE_NAME = "ballesterosd/tp7" 
         DOCKER_IMAGE_TAG = "${env.BUILD_NUMBER}"
-        CONTAINER_NAME = "mi-contenedor"  // El nombre de tu contenedor
     }
 
     stages{
@@ -17,14 +16,14 @@ pipeline {
         stage('Stop and Remove Existing Container') {
             steps {
                 script {
-                    def existingContainerId = sh(script: "docker ps -aqf name=${CONTAINER_NAME}", returnStatus: true).trim()
+                    def existingContainerId = sh(script: "docker ps -aqf name=${DOCKER_IMAGE_NAME}", returnStatus: true).trim()
                     if (existingContainerId) {
                         echo "Deteniendo y eliminando el contenedor existente con ID ${existingContainerId}..."
                         sh "docker stop ${existingContainerId}"
                         sh "docker rm ${existingContainerId}"
                         echo "Contenedor existente detenido y eliminado con éxito."
                     } else {
-                        echo "No se encontró ningún contenedor existente con el nombre ${CONTAINER_NAME}."
+                        echo "No se encontró ningún contenedor existente con el nombre ${DOCKER_IMAGE_NAME}."
                     }
                 }
             }
@@ -45,8 +44,9 @@ pipeline {
             steps {
                 script {
                     echo "Ejecutando el contenedor Docker..."
+                    def existingContainerId = sh(script: "docker ps -aqf name=${DOCKER_IMAGE_NAME}", returnStatus: true).trim()
                     docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").withRun("-p 5273:5273") {
-                        sh "docker exec ${CONTAINER_NAME} curl -X GET http://localhost:5273/api/TodoItems"
+                        sh "docker exec ${existingContainerId} curl -X GET http://localhost:5273/api/TodoItems"
                     }
                     echo "Contenedor Docker ejecutado con éxito."
                 }
