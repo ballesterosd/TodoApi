@@ -17,13 +17,16 @@ pipeline {
             steps {
                 script {
                     String existingContainerOutput = sh(script: "docker ps -a -q --filter ancestor=${DOCKER_IMAGE_NAME}", returnStdout: true)
-                    if (existingContainerOutput != null) {
+                    if (!existingContainerOutput.isEmpty()) {
+                        echo existingContainerOutput
                         def existingContainerIds = existingContainerOutput.split("\n")
-                        for (existingContainerId in existingContainerIds) {
-                            echo "Deteniendo y eliminando el contenedor existente con ID ${existingContainerId}..."
-                            sh "docker stop $existingContainerId"
-                            sh "docker rm $existingContainerId"
-                            echo "Contenedor existente detenido y eliminado con éxito."
+                        if (!existingContainerIds.isEmpty()) {
+                            for (existingContainerId in existingContainerIds) {
+                                echo "Deteniendo y eliminando el contenedor existente con ID ${existingContainerId}..."
+                                sh "docker stop $existingContainerId"
+                                sh "docker rm $existingContainerId"
+                                echo "Contenedor existente detenido y eliminado con éxito."
+                            }
                         }
                     }
                 }
