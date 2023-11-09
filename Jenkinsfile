@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE_NAME = "ballesterosd/tp7" 
         DOCKER_IMAGE_TAG = "${env.BUILD_NUMBER}"
-        appsettingsData = "\{\"Status\": \"Enabled\"\}"
+        appsettingsData = "{\"Status\": \"Enabled\"}"
     }
 
     stages{
